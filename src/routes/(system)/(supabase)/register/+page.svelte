@@ -103,51 +103,7 @@
         throw signUpError;
       }
 
-      // Sign in immediately after signup to get session
-      if (data?.user) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (signInError) throw signInError;
-
-        // Now create profile with active session
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            username: username || `user_${data.user.id.slice(0, 8)}`,
-            role: 'free',
-            privilege_role: 'user',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-          throw new Error('Failed to create user profile');
-        }
-
-        // Create public profile in local postgres
-        const publicProfileResponse = await api('/profiles', {
-          method: 'POST',
-          body: JSON.stringify({
-            user_id: data.user.id,
-            username: username || `user_${data.user.id.slice(0, 8)}`,
-            bio: ''
-          })
-        });
-
-        if (!publicProfileResponse.ok) {
-          const errorData = await publicProfileResponse.json();
-          console.error('Public profile creation error:', errorData);
-          throw new Error('Failed to create public profile');
-        }
-      }
-
-      // Show success message instead of redirecting
+      // Show success message immediately after successful signup
       successMessage = 'Du har fått ett e-postmeddelande! Kontrollera din inkorg för att aktivera ditt konto.';
       
       // Clear form
@@ -155,6 +111,54 @@
       password = '';
       confirmPassword = '';
       username = '';
+
+      // Try to create profiles in background (don't fail registration if this fails)
+      if (data?.user) {
+        try {
+          // Sign in to create profiles
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (!signInError) {
+            // Create profile with active session
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .insert({
+                id: data.user.id,
+                email: data.user.email,
+                username: username || `user_${data.user.id.slice(0, 8)}`,
+                role: 'free',
+                privilege_role: 'user',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+
+            if (profileError) {
+              console.error('Profile creation error:', profileError);
+            }
+
+            // Create public profile in local postgres
+            const publicProfileResponse = await api('/profiles', {
+              method: 'POST',
+              body: JSON.stringify({
+                user_id: data.user.id,
+                username: username || `user_${data.user.id.slice(0, 8)}`,
+                bio: ''
+              })
+            });
+
+            if (!publicProfileResponse.ok) {
+              const errorData = await publicProfileResponse.json();
+              console.error('Public profile creation error:', errorData);
+            }
+          }
+        } catch (profileError) {
+          console.error('Background profile creation failed:', profileError);
+          // Don't throw error - registration was successful
+        }
+      }
     } catch (err) {
       error = err.message || 'Registration failed. Please try again.';
     } finally {
