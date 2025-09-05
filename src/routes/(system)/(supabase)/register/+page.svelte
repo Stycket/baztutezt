@@ -10,6 +10,7 @@
   let username = '';
   let error = '';
   let loading = false;
+  let successMessage = '';
   
   // Add fallback for USERNAME_SETTINGS if PUBLIC_CONFIG.FEATURES is undefined
   const USERNAME_SETTINGS = PUBLIC_CONFIG?.FEATURES?.USERNAME_SETTINGS || {
@@ -146,7 +147,14 @@
         }
       }
 
-      goto('/login?registered=true');
+      // Show success message instead of redirecting
+      successMessage = 'Du har fått ett e-postmeddelande! Kontrollera din inkorg för att aktivera ditt konto.';
+      
+      // Clear form
+      email = '';
+      password = '';
+      confirmPassword = '';
+      username = '';
     } catch (err) {
       error = err.message || 'Registration failed. Please try again.';
     } finally {
@@ -232,6 +240,12 @@
         {#if error}
           <div class="error-message">
             {error}
+          </div>
+        {/if}
+        
+        {#if successMessage}
+          <div class="success-message">
+            {successMessage}
           </div>
         {/if}
         
@@ -396,6 +410,15 @@
     border-radius: 0.5rem;
     font-size: 0.875rem;
     border: 1px solid rgba(220, 38, 38, 0.3);
+  }
+  
+  .success-message {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    border: 1px solid rgba(34, 197, 94, 0.3);
   }
   
   .login-button {
