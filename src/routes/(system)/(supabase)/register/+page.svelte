@@ -255,7 +255,7 @@
       </form>
       
       <div class="login-footer">
-        <p>Har  du redan aktiverat konto? <a href="/login">Logga In</a></p>
+        <p>Har  du redan skapat konto? <a href="/login">Logga In</a></p>
       </div>
     </div>
   </div>
