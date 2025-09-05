@@ -1,0 +1,63 @@
+import { env } from '$env/dynamic/private';
+import { PUBLIC_CONFIG } from '$lib/constants';
+
+export const PRIVATE_CONFIG = {
+  FORUM_CATEGORIES: {
+  "b845fa53-e9e4-4537-a882-87681aa1a4f6": {
+    "id": "b845fa53-e9e4-4537-a882-87681aa1a4f6",
+    "name": "Philosophy",
+    "description": "Discussions on philosophical topics, including ethics, metaphysics, epistemology, and the history of philosophy. Share insights, debates, and readings on various philosophical traditions and thinkers."
+  },
+  "3e2f1836-0677-41d4-b319-c9e93a6ba51e": {
+    "id": "3e2f1836-0677-41d4-b319-c9e93a6ba51e",
+    "name": "Tezt Category",
+    "description": "A temporary category for testing forum features and functionality. All types of test content are permitted here."
+  },
+  "70ae4b49-619a-478c-85d5-6d93ce3d178c": {
+    "id": "70ae4b49-619a-478c-85d5-6d93ce3d178c",
+    "name": "Underground Music",
+    "description": "A space for discussing underground music scenes, independent artists, and niche genres that exist outside mainstream music. Share tracks, reviews, and news about underground music movements."
+  }
+},
+  
+  // Feature flags
+  FEATURES: {
+    SUBSCRIPTIONS_ENABLED: true,
+    PRODUCTS_ENABLED: true,
+    
+    USERNAME_SETTINGS: {
+      ENABLED: true,
+      REQUIRED: true,
+      MIN_LENGTH: 3,
+      MAX_LENGTH: 20,
+      ALLOWED_CHARACTERS: '^[a-zA-Z0-9_-]+$'
+    },
+    
+    PRODUCT_SETTINGS: {
+      USE_CART: true,
+      CART_ROUTE: '/cart',
+      CART_CONFIG: {
+        showCartIcon: true,
+        maxItems: 10
+      }
+    },
+    
+    SOCIAL_SETTINGS: {
+      ENABLED: true,
+      COMMENTS: {
+        ENABLED: true,
+        THREADED: true,
+        MAX_NESTING: 5,
+        MODERATION: {
+          ENABLED: true,
+          AUTO_APPROVE: false
+        }
+      },
+      FORUM_SETTINGS: {USER_CATEGORY_CREATION: false}
+    }
+  }
+};
+
+export const PRIVATE_SECRETS = {
+  // This section contains secrets that should not be committed to version control
+};
