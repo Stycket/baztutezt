@@ -1,14 +1,22 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import fs from 'fs';
+import path from 'path';
+
+// Check if SSL certificates exist
+const keyPath = '.cert/key.pem';
+const certPath = '.cert/cert.pem';
+const hasCertificates = fs.existsSync(keyPath) && fs.existsSync(certPath);
 
 export default defineConfig({
 	plugins: [sveltekit()],
 	server: {
-		https: {
-			key: fs.readFileSync('.cert/key.pem'),
-			cert: fs.readFileSync('.cert/cert.pem'),
-		},
+		...(hasCertificates && {
+			https: {
+				key: fs.readFileSync(keyPath),
+				cert: fs.readFileSync(certPath),
+			}
+		}),
 		host: true,
 		port: 5173,
 		strictPort: false,

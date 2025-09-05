@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { session } from '$lib/stores';
   import { api } from '$lib/utils/api';
@@ -45,7 +45,7 @@
       try {
         console.log('Session not fully loaded, waiting for session');
         // Wait for session to be fully loaded
-        await new Promise<void>(resolve => {
+        await new Promise(resolve => {
           const unsubscribe = session.subscribe(value => {
             if (value?.user?.id && value?.csrf_token) {
               console.log('Session fully loaded for booking page');
