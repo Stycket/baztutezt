@@ -100,6 +100,17 @@
         if (signUpError.status === 429) {
           throw new Error('Too many signup attempts. Please try again in a few minutes.');
         }
+        
+        // Check for specific email already registered error
+        if (signUpError.message && (
+          signUpError.message.includes('already registered') ||
+          signUpError.message.includes('User already registered') ||
+          signUpError.message.includes('email address is already registered') ||
+          signUpError.message.includes('duplicate key value violates unique constraint')
+        )) {
+          throw new Error('Emailen är redan registrerad, du kan använda återställningslänken: https://grabobastu.se/reset-password');
+        }
+        
         throw signUpError;
       }
 
