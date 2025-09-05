@@ -97,6 +97,8 @@
       });
       
       if (signUpError) {
+        console.log('SignUp Error:', signUpError); // Debug log
+        
         if (signUpError.status === 429) {
           throw new Error('Too many signup attempts. Please try again in a few minutes.');
         }
@@ -106,7 +108,10 @@
           signUpError.message.includes('already registered') ||
           signUpError.message.includes('User already registered') ||
           signUpError.message.includes('email address is already registered') ||
-          signUpError.message.includes('duplicate key value violates unique constraint')
+          signUpError.message.includes('duplicate key value violates unique constraint') ||
+          signUpError.message.includes('already exists') ||
+          signUpError.message.includes('already been registered') ||
+          signUpError.message.includes('email already exists')
         )) {
           throw new Error('Emailen är redan registrerad, du kan använda återställningslänken: https://grabobastu.se/reset-password');
         }
@@ -114,14 +119,23 @@
         throw signUpError;
       }
 
-      // Show success message immediately after successful signup
-      successMessage = 'Du har fått ett e-postmeddelande! Kontrollera din inkorg för att aktivera ditt konto.';
-      
-      // Clear form
-      email = '';
-      password = '';
-      confirmPassword = '';
-      username = '';
+      // Check if user was actually created (not just existing user)
+      if (data?.user && !data.user.email_confirmed_at) {
+        // Show success message for new user
+        successMessage = 'Du har fått ett e-postmeddelande! Kontrollera din inkorg för att aktivera ditt konto.';
+        
+        // Clear form
+        email = '';
+        password = '';
+        confirmPassword = '';
+        username = '';
+      } else if (data?.user && data.user.email_confirmed_at) {
+        // User already exists and is confirmed
+        throw new Error('Emailen är redan registrerad, du kan använda återställningslänken: https://grabobastu.se/reset-password');
+      } else {
+        // No user data returned - something went wrong
+        throw new Error('Registration failed. Please try again.');
+      }
 
       // Try to create profiles in background (don't fail registration if this fails)
       if (data?.user) {
