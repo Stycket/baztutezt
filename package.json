@@ -7,7 +7,15 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"pm2:start": "PORT=3001 POSTGRES_USER=bastu_admin POSTGRES_PASSWORD=bastupassword POSTGRES_DB=bastudb POSTGRES_HOST=localhost POSTGRES_PORT=5433 pm2 start build/index.js --name \"svelte\"",
+		"pm2:restart": "pm2 restart svelte",
+		"pm2:stop": "pm2 stop svelte",
+		"pm2:delete": "pm2 delete svelte",
+		"pm2:status": "pm2 status",
+		"pm2:logs": "pm2 logs svelte",
+		"pm2:monit": "pm2 monit",
+		"deploy": "npm run build && npm run pm2:restart"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
